@@ -1,0 +1,40 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mock-server-{{.version}}
+  namespace: gophercon
+  labels:
+    app: mock-server-{{.version}}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mock-server-{{.version}}
+        service: mock-server-{{.version}}
+    spec:
+      containers:
+      - name: mock-server-{{.version}}
+        imagePullPolicy: Always
+        image: gophercon/mock-server:{{.version}}
+        ports:
+          - containerPort: 8086
+            name: healthcheck
+        command:
+          - /mock-server
+--- 
+apiVersion: apps/v1beta1
+kind: Service
+apiVersion: v1
+metadata:
+  name: mock-server-{{.version}}
+  namespace: gophercon
+spec:
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 7710
+      targetPort: 7710
+selector:
+    app: mock-server-{{.version}}
+type: ClusterIP

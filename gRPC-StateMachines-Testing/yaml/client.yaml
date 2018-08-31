@@ -1,0 +1,41 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: client-{{.version}}
+  namespace: gophercon
+  labels:
+    app: client-{{.version}}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: client-{{.version}}
+        service: client-{{.version}}
+    spec:
+      containers:
+      - name: client-{{.version}}
+        imagePullPolicy: Always
+        image: gophercon/client:{{.version}}
+        ports:
+          - containerPort: 8086
+            name: healthcheck
+        command:
+          - /client
+          - --version={{.version}}
+          - --server={{.server}}
+--- 
+apiVersion: apps/v1beta1
+kind: Service
+apiVersion: v1
+metadata:
+  name: client-{{.version}}
+  namespace: gophercon
+spec:
+  selector:
+    service: client-{{.version}}
+  ports:
+  - name: healthcheck
+    protocol: TCP
+    port: 8086
+    targetPort: 8086

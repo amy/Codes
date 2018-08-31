@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package version;
+
+service VersionService {
+    rpc GetVersion(GetVersionRequest) returns (GetVersionResponse);
+}
+
+message GetVersionRequest {
+    string id = 1;
+}
+
+message Package {
+    string name = 1;
+    string version = 2;
+    string config = 3;
+}
+
+message GetVersionResponse {
+    Package package = 1;
+}
+
+// protoc -I version/ version/version.proto --go_out=plugins=grpc:version
